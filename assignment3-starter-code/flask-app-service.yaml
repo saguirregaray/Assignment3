@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-app-service
+spec:
+  selector:
+    app: flask-app
+  ports:
+    - protocol: TCP
+      port: 80  # Exposed port to access the Flask app
+      targetPort: 5000  # Container port where the Flask app is running
+  type: LoadBalancer  # For Minikube, use LoadBalancer to expose outside the cluster
