@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-alert-rules
+  labels:
+    app: prometheus
+data:
+  alert.rules.yml: |
+    groups:
+      - name: flask-app-alerts
+        rules:
+          - alert: FlaskAppError
+            expr: |
+              increase(http_requests_total{job="flask-app", status="500"}[1m]) > 0
+            for: 1m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Flask App Error Detected"
+              description: "The Flask application has encountered an error"
+
+    receivers:
+      - name: 'slack-notifications'
+        slack_configs:
+          - send_resolved: true
+            channel: '#general'
+            api_url: 'https://hooks.slack.com/services/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'
+
+    route:
+      group_by: ['alertname']
+      group_wait: 10s
+      group_interval: 5m
+      repeat_interval: 3h
+      receiver: 'slack-notifications'
+
+    inhibit_rules:
+      - source_match:
+          severity: 'critical'
+        target_match:
+          severity: 'warning'
+        equal: ['alertname', 'dev', 'instance']

@@ -3,10 +3,16 @@ kind: Deployment
 metadata:
   name: flask-app-deployment
 spec:
-  replicas: 3  # Set the desired number of replicas
+  progressDeadlineSeconds: 500
+  replicas: 3
   selector:
     matchLabels:
       app: flask-app
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
   template:
     metadata:
       labels:
@@ -18,6 +24,17 @@ spec:
           ports:
             - containerPort: 5000
           env:
-            - name: MONGO_HOST  # Environment variable for MongoDB host
+            - name: MONGO_HOST
               value: mongodb-service
-
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /live
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 15
