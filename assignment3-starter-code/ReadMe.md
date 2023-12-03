@@ -61,17 +61,17 @@ kubectl get pods
 kubectl describe pod <pod-name>
 
 # Part 8
-kubectl apply -f prometheus-service.yaml
-kubectl apply -f prometheus-server-conf.yaml
-kubectl apply -f alert.rules
 kubectl apply -f prometheus-deployment.yaml
+kubectl apply -f prometheus-config.yaml
+kubectl apply -f alertmanager-deployment.yaml
+kubectl apply -f alertmanager-config.yaml
 
+kubectl delete configmap prometheus-server-conf
+kubectl create configmap prometheus-server-conf --from-file=prometheus-config.yaml
+kubectl delete configmap alertmanager-config
+kubectl create configmap alertmanager-config --from-file=alertmanager-config.yaml
 
 minikube service prometheus-service --url
-
-kubectl delete pod -l app=prometheus
-
-
 
 
 

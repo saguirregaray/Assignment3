@@ -6,11 +6,11 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: prometheus
+      app: prometheus-server
   template:
     metadata:
       labels:
-        app: prometheus
+        app: prometheus-server
     spec:
       containers:
       - name: prometheus
@@ -18,13 +18,27 @@ spec:
         ports:
         - containerPort: 9090
         volumeMounts:
-        - name: prometheus-server-conf
+        - name: prometheus-config-volume
           mountPath: /etc/prometheus
-        command:
-        - "/bin/prometheus"
-        args:
-        - "--config.file=/etc/prometheus/prometheus.yml"
       volumes:
-      - name: prometheus-server-conf
+      - name: prometheus-config-volume
         configMap:
           name: prometheus-server-conf
+          items:
+          - key: prometheus.yml
+            path: prometheus.yml
+          - key: alert.rules
+            path: alert.rules
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-service
+spec:
+  selector:
+    app: prometheus-server
+  ports:
+  - protocol: TCP
+    port: 9090
+    targetPort: 9090
+  type: NodePort

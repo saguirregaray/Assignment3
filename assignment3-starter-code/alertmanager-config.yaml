@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alertmanager-config
+data:
+  alertmanager.yml: |-
+    global:
+    templates:
+    - '/etc/alertmanager/*.tmpl'
+    route:
+      receiver: slack_demo
+      group_by: ['alertname', 'priority']
+      group_wait: 10s
+      repeat_interval: 30m
+      routes:
+        - receiver: slack_demo
+          match:
+            severity: slack
+          group_wait: 10s
+          repeat_interval: 1m
+    receivers:
+    - name: slack_demo
+      slack_configs:
+      - api_url: 'https://hooks.slack.com/services/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sz4Qk'
+        channel: '#general'
