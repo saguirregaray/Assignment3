@@ -23,7 +23,14 @@ kubectl apply -f mongodb-service.yaml
 ### Access the app
 minikube service flask-app-service
 
-#Part 4:
+#Part 4:eksctl create cluster --name Assignment3Cluster --region us-east-1 --zones us-east-1a,us-east-1b,us-east-1c,us-east-1d,us-east-1f
+aws eks --region us-east-1 update-kubeconfig --name Assignment3Cluster
+kubectl config get-contexts
+kubectl config use-context A3User@Assignment3Cluster.us-east-1.eksctl.io
+
+http://aa9a87c431e74449fa2d7f7216cff703-814797648.us-east-1.elb.amazonaws.com:32738
+
+aws cloudformation delete-stack --stack-name eksctl-Assignment3Cluster-cluster
 
 #Part 5:
 
